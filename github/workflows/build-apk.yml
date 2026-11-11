@@ -1,0 +1,37 @@
+
+name: Build STAR VPN APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main, master ]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.11.1'
+
+      - name: Extract source
+        run: unzip -q STAR_VPN_ANDROID_SOURCE_WITH_ICON.zip -d source
+
+      - name: Build APK
+        working-directory: source/starvpn_project
+        run: gradle --no-daemon clean assembleDebug
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: STAR-VPN-APK
+          path: source/starvpn_project/app/build/outputs/apk/debug/*.apk
