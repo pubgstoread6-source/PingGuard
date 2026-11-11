@@ -4,7 +4,7 @@ name: Build STAR VPN APK
 on:
   workflow_dispatch:
   push:
-    branches: [ main, master ]
+    branches: [main]
 
 permissions:
   contents: read
@@ -25,11 +25,13 @@ jobs:
           gradle-version: '8.11.1'
 
       - name: Extract source
-        run: unzip -q STAR_VPN_ANDROID_SOURCE_WITH_ICON.zip -d source
+        run: |
+          mkdir source
+          unzip -q STAR_VPN_ANDROID_SOURCE_WITH_ICON.zip -d source
 
       - name: Build APK
-        working-directory: source/starvpn_project
-        run: gradle --no-daemon clean assembleDebug
+        run: |
+          gradle -p source/starvpn_project clean assembleDebug
 
       - uses: actions/upload-artifact@v4
         with:
